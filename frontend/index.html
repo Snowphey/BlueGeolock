@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Blue Geolock</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+        <style>
+            #map { height: 600px; }
+        </style>
+        <link rel="icon" type="image/x-icon" href="/img/Blue_Geolock_favicon.png">
+    </head>
+<body>
+    <div id="map"></div>
+
+    <script>
+        const map = L.map('map').setView([48.8566, 2.3522], 5);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+
+        const markers = {};
+        const socket = new WebSocket(`ws://localhost:8000/ws/coordinates`);
+
+        socket.onopen = function(e) {
+            console.log('WebSocket connection established');
+        };
+
+        socket.onmessage = function(event) {
+            console.log("On m'envoie un message ! ", event);
+
+            const coordinates = JSON.parse(event.data);
+            
+            coordinates.forEach(coord => {
+                if (markers[coord.machine_id]) {
+                    map.removeLayer(markers[coord.machine_id]);
+                }
+
+                const customIcon = L.icon({
+                    iconUrl: '/img/Blue_Geolock_logo.png',
+                    iconSize: [50, 50], // size of the icon
+                    iconAnchor: [22, 38], // point of the icon which will correspond to marker's location
+                    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
+                });
+
+                const marker = L.marker([coord.latitude, coord.longitude], { icon: customIcon })
+                    .addTo(map)
+                    .bindPopup(`Machine ID: ${coord.machine_id}<br>Timestamp: ${coord.timestamp}`);
+
+                markers[coord.machine_id] = marker;
+            });
+        };
+
+        socket.onclose = function(event) {
+            if (event.wasClean) {
+                console.log(`Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+            } else {
+                console.error('Connection died');
+            }
+        };
+
+        socket.onerror = function(error) {
+            console.error(`[error] ${error.message}`);
+        };
+    </script>
+</body>
+</html>
