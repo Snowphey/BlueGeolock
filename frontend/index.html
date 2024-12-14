@@ -211,7 +211,7 @@
 ]
 
         const ballIcon = L.icon({
-                    iconUrl: '/img/icons/ball.png',
+                    iconUrl: '/img/icons/11v11/ball.png',
                     iconSize: [40, 40],
                     popupAnchor: [0, -20]
                 });
@@ -228,7 +228,7 @@
         function addPlayerMarkers(team, teamName) {
             team.forEach(player => {
                 const playerIcon = L.icon({
-                    iconUrl: `/img/icons/${teamName}/png/BL_Icon_${player.first_name}_${player.last_name}.png`,
+                    iconUrl: `/img/icons/11v11/${teamName}/png/BL_Icon_${player.first_name}_${player.last_name}.png`,
                     iconSize: iconSize,
                     popupAnchor: popupAnchor
                 });
