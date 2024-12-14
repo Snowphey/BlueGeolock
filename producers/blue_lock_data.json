@@ -1,0 +1,90 @@
+[
+    {
+        "first_name": "Yoichi",
+        "last_name": "Isagi",
+        "number": 11,
+        "role": "offensive_midfielder",
+        "latitude": 0.685,
+        "longitude": 0.664  
+    },
+    {
+        "first_name": "Seishiro",
+        "last_name": "Nagi",
+        "number": 7,
+        "role": "offensive_midfielder",
+        "latitude": 0.399,
+        "longitude": 0.669
+    },
+    {
+        "first_name": "Rin",
+        "last_name": "Itoshi",
+        "number": 10,
+        "role": "striker",
+        "latitude": 0.512,
+        "longitude": 0.563
+    },
+    {
+        "first_name": "Meguru",
+        "last_name": "Bachira",
+        "number": 8,
+        "role": "left_defender",
+        "latitude": 0.101,
+        "longitude": 0.782
+    },
+    {
+        "first_name": "Ikki",
+        "last_name": "Niko",
+        "number": 3,
+        "role": "central_defender",
+        "latitude": 0.34,
+        "longitude": 0.834
+    },
+    {
+        "first_name": "Tabito",
+        "last_name": "Karasu",
+        "number": 6,
+        "role": "defensive_midfielder",
+        "latitude": 0.516,
+        "longitude": 0.763
+    },
+    {
+        "first_name": "Kenyu",
+        "last_name": "Yukimiya",
+        "number": 5,
+        "role": "left_winger",
+        "latitude": 0.191,
+        "longitude": 0.613
+    },
+    {
+        "first_name": "Eita",
+        "last_name": "Otoya",
+        "number": 9,
+        "role": "right_winger",
+        "latitude": 0.86,
+        "longitude": 0.606
+    },
+    {
+        "first_name": "Jyubei",
+        "last_name": "Aryu",
+        "number": 2,
+        "role": "central_defender",
+        "latitude": 0.688,
+        "longitude": 0.834
+    },
+    {
+        "first_name": "Gin",
+        "last_name": "Gagamaru",
+        "number": 1,
+        "role": "goalkeeper",
+        "latitude": 0.513,
+        "longitude": 0.975
+    },
+    {
+        "first_name": "Hyoma",
+        "last_name": "Chigiri",
+        "number": 4,
+        "role": "right_defender",
+        "latitude": 0.911,
+        "longitude": 0.779
+    }
+]

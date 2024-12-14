@@ -29,10 +29,10 @@ async def get_latest_coordinates():
     cursor = conn.cursor()
     
     cursor.execute("""
-        SELECT machine_id, latitude, longitude, timestamp 
+        SELECT first_name, last_name, latitude, longitude, timestamp 
         FROM (
-            SELECT machine_id, latitude, longitude, timestamp,
-                   ROW_NUMBER() OVER (PARTITION BY machine_id ORDER BY timestamp DESC) as rn
+            SELECT first_name, last_name, latitude, longitude, timestamp,
+                   ROW_NUMBER() OVER (PARTITION BY first_name, last_name ORDER BY timestamp DESC) as rn
             FROM gps_coordinates
         ) t 
         WHERE rn = 1
@@ -41,10 +41,11 @@ async def get_latest_coordinates():
     results = cursor.fetchall()
     coordinates = [
         {
-            "machine_id": row[0],
-            "latitude": row[1],
-            "longitude": row[2],
-            "timestamp": row[3].isoformat()
+            "first_name": row[0],
+            "last_name": row[1],
+            "latitude": row[2],
+            "longitude": row[3],
+            "timestamp": row[4].isoformat()
         } for row in results
     ]
     
@@ -60,24 +61,25 @@ async def websocket_coordinates(websocket: WebSocket):
     while True:
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT DISTINCT ON (machine_id) 
-                machine_id,
+            SELECT DISTINCT ON (first_name, last_name) 
+                first_name,
+                last_name,
                 latitude,
                 longitude,
                 timestamp
             FROM gps_coordinates
-            ORDER BY machine_id, timestamp DESC;
+            ORDER BY first_name, last_name, timestamp DESC;
         """)
         
         results = cursor.fetchall()
         coordinates = [
             {
-                "machine_id": row[0],
-                "latitude": float(row[1]),
-                "longitude": float(row[2]),
-                "timestamp": row[3].isoformat()
+                "first_name": row[0],
+                "last_name": row[1],
+                "latitude": float(row[2]),
+                "longitude": float(row[3]),
+                "timestamp": row[4].isoformat()
             } for row in results
         ]
         
         await websocket.send_json(coordinates)
-        await asyncio.sleep(5)

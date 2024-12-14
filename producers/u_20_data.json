@@ -1,0 +1,90 @@
+[
+    {
+        "first_name": "Sae",
+        "last_name": "Itoshi",
+        "number": 10,
+        "role": "offensive_midfielder",
+        "latitude": 0.509,
+        "longitude": 0.374
+    },
+    {
+        "first_name": "Oliver",
+        "last_name": "Aiku",
+        "number": 2,
+        "role": "central_defender",
+        "latitude": 0.668,
+        "longitude": 0.18
+    },
+    {
+        "first_name": "Kento",
+        "last_name": "Cho",
+        "number": 8,
+        "role": "left_winger",
+        "latitude": 0.873,
+        "longitude": 0.433
+    },
+    {
+        "first_name": "Kazuma",
+        "last_name": "Nio",
+        "number": 3,
+        "role": "central_defender",
+        "latitude": 0.355,
+        "longitude": 0.18
+    },
+    {
+        "first_name": "Teppei",
+        "last_name": "Neru",
+        "number": 4,
+        "role": "right_defender",
+        "latitude": 0.144,
+        "longitude": 0.231
+    },
+    {
+        "first_name": "Gen",
+        "last_name": "Fukaku",
+        "number": 1,
+        "role": "goalkeeper",
+        "latitude": 0.5,
+        "longitude": 0.03
+    },
+    {
+        "first_name": "Haru",
+        "last_name": "Hayate",
+        "number": 7,
+        "role": "defensive_midfielder",
+        "latitude": 0.389,
+        "longitude": 0.293
+    },
+    {
+        "first_name": "Itsuki",
+        "last_name": "Wakatsuki",
+        "number": 6,
+        "role": "defensive_midfielder",
+        "latitude": 0.611,
+        "longitude": 0.293
+    },
+    {
+        "first_name": "Miroku",
+        "last_name": "Darai",
+        "number": 5,
+        "role": "left_defender",
+        "latitude": 0.905,
+        "longitude": 0.237
+    },
+    {
+        "first_name": "Teru",
+        "last_name": "Kitsunezato",
+        "number": 9,
+        "role": "right_winger",
+        "latitude": 0.167,
+        "longitude": 0.432
+    },
+    {
+        "first_name": "Shuto",
+        "last_name": "Sendo",
+        "number": 11,
+        "role": "striker",
+        "latitude": 0.509,
+        "longitude": 0.447
+    }
+]

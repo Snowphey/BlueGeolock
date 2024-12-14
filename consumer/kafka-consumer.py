@@ -20,11 +20,14 @@ class GPSConsumer:
 
     def store_coordinates(self, coords):
         query = """
-        INSERT INTO gps_coordinates (machine_id, latitude, longitude)
-        VALUES (%s, %s, %s)
+        INSERT INTO gps_coordinates (first_name, last_name, latitude, longitude)
+        VALUES (%s, %s, %s, %s)
+        ON CONFLICT (first_name, last_name)
+        DO UPDATE SET latitude = EXCLUDED.latitude, longitude = EXCLUDED.longitude, timestamp = now();
         """
         self.pg_cursor.execute(query, (
-            coords['id'], 
+            coords['first_name'],
+            coords['last_name'], 
             coords['latitude'], 
             coords['longitude']
         ))

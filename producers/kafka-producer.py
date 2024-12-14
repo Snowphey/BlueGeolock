@@ -1,99 +1,216 @@
 import json
-import time
-import socket
 import random
-import math
+import time
 from kafka import KafkaProducer
-import threading
+from typing import Dict, List, Tuple
 
-class RealisticGPSProducer:
-    def __init__(self, machine_id, bootstrap_servers, topic, base_lat, base_lon, max_speed_km_per_hour=50):
+class FootballPlayerProducer:
+    def __init__(self, player_data: Dict, bootstrap_servers: List[str], topic: str, team_name: str):
+        """
+        Initialize a Kafka producer for a football player
+        
+        :param player_data: Dictionary containing player details
+        :param bootstrap_servers: List of Kafka bootstrap servers
+        :param topic: Kafka topic to publish coordinates
+        :param team_name: Name of the team
+        """
         self.producer = KafkaProducer(
             bootstrap_servers=bootstrap_servers,
             value_serializer=lambda v: json.dumps(v).encode('utf-8')
         )
+        
+        self.player_data = player_data
         self.topic = topic
-        self.machine_id = machine_id
+        self.team_name = team_name
         
-        # État initial
-        self.current_lat = base_lat
-        self.current_lon = base_lon
+        # Initial position
+        self.current_lat = player_data['latitude']
+        self.current_lon = player_data['longitude']
         
-        # Paramètres de mouvement
-        self.max_speed = max_speed_km_per_hour / 3600  # conversion en degrés/seconde
-        self.direction = random.uniform(0, 2 * math.pi)  # Direction initiale aléatoire
-
-    def haversine_distance(self, lat1, lon1, lat2, lon2):
-        """Calcule la distance entre deux points GPS"""
-        R = 6371  # Rayon de la Terre en km
-        
-        dlat = math.radians(lat2 - lat1)
-        dlon = math.radians(lon2 - lon1)
-        a = (math.sin(dlat/2)**2 + 
-             math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2)**2)
-        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-        return R * c
-
-    def generate_next_coordinates(self):
-        """
-        Génère des coordonnées cohérentes basées sur un mouvement brownien
-        avec des changements de direction graduels
-        """
-        # Changement de direction minimal (+-15 degrés)
-        direction_change = random.uniform(-math.pi/12, math.pi/12)
-        self.direction += direction_change
-
-        # Calcul du déplacement
-        dx = self.max_speed * math.cos(self.direction)
-        dy = self.max_speed * math.sin(self.direction)
-
-        # Conversion des degrés
-        new_lat = self.current_lat + dy / 111  # 1 degré latitude ≈ 111 km
-        new_lon = self.current_lon + dx / (111 * math.cos(math.radians(self.current_lat)))
-
-        return {
-            'id': self.machine_id,
-            'latitude': new_lat,
-            'longitude': new_lon,
-            'speed': self.max_speed * 3600,  # km/h
-            'direction': math.degrees(self.direction)
+        # Movement constraints based on role
+        self.movement_constraints = {
+            'goalkeeper': (0.001, 0.005),  # Smaller area near initial position
+            'central_defender': (0.002, 0.01),  # Moderate movement area
+            'left_defender': (0.001, 0.008),
+            'right_defender': (0.001, 0.008),
+            'defensive_midfielder': (0.002, 0.01),
+            'offensive_midfielder': (0.003, 0.015),
+            'left_winger': (0.002, 0.01),
+            'right_winger': (0.002, 0.01),
+            'striker': (0.003, 0.015)  # Larger movement area
         }
+        
+    def generate_new_position(self) -> Tuple[float, float]:
+        """
+        Generate a new position based on player's role and initial position
+        
+        :return: Tuple of (latitude, longitude)
+        """
+        role = self.player_data['role']
+        min_distance, max_distance = self.movement_constraints[role]
+        
+        # Add team-specific movement bias
+        team_bias_lat = 0.001 if self.team_name == 'blue_lock' else -0.001
+        team_bias_lon = 0.001 if self.team_name == 'blue_lock' else -0.001
+        
+        # Random walk with role-based constraints and team bias
+        lat_change = random.uniform(-max_distance, max_distance) + team_bias_lat
+        lon_change = random.uniform(-max_distance, max_distance) + team_bias_lon
+        
+        new_lat = max(0, min(1, self.current_lat + lat_change))
+        new_lon = max(0, min(1, self.current_lon + lon_change))
+        
+        return new_lat, new_lon
+    
+    def publish_position(self):
+        """
+        Publish player's position to Kafka topic
+        """
+        new_lat, new_lon = self.generate_new_position()
+        
+        # Update current position
+        self.current_lat = new_lat
+        self.current_lon = new_lon
+        
+        # Prepare message
+        message = {
+            'first_name': self.player_data['first_name'],
+            'last_name': self.player_data['last_name'],
+            'latitude': new_lat,
+            'longitude': new_lon
+        }
+        
+        # Publish to Kafka
+        self.producer.send(self.topic, message)
+        self.producer.flush()
+    
+    def start_publishing(self, interval: float = 2.0):
+        """
+        Start continuously publishing player positions
+        
+        :param interval: Time between position updates in seconds
+        """
+        try:
+            while True:
+                self.publish_position()
+                time.sleep(interval)
+        except KeyboardInterrupt:
+            print(f"Stopping producer for {self.player_data['first_name']} {self.player_data['last_name']}")
+        finally:
+            self.producer.close()
 
-    def update_current_position(self, new_coords):
-        """Met à jour la position courante"""
-        self.current_lat = new_coords['latitude']
-        self.current_lon = new_coords['longitude']
+class BallProducer:
+    def __init__(self, bootstrap_servers: List[str], topic: str):
+        """
+        Special producer for the ball with more random movement
+        """
+        self.producer = KafkaProducer(
+            bootstrap_servers=bootstrap_servers,
+            value_serializer=lambda v: json.dumps(v).encode('utf-8')
+        )
+        
+        self.topic = topic
+        
+        # Initial ball position (middle of the field)
+        self.current_lat = 0.5
+        self.current_lon = 0.5
+    
+    def generate_new_position(self) -> Tuple[float, float]:
+        """
+        Generate more random ball movement
+        """
+        lat_change = random.uniform(-0.002, 0.002)
+        lon_change = random.uniform(-0.002, 0.002)
+        
+        new_lat = max(0, min(1, self.current_lat + lat_change))
+        new_lon = max(0, min(1, self.current_lon + lon_change))
+        
+        return new_lat, new_lon
+    
+    def publish_position(self):
+        """
+        Publish ball's position to Kafka topic
+        """
+        new_lat, new_lon = self.generate_new_position()
+        
+        # Update current position
+        self.current_lat = new_lat
+        self.current_lon = new_lon
+        
+        # Prepare message
+        message = {
+            'first_name': 'Football',
+            'last_name': 'Ball',
+            'latitude': new_lat,
+            'longitude': new_lon
+        }
+        
+        # Publish to Kafka
+        self.producer.send(self.topic, message)
+        self.producer.flush()
+    
+    def start_publishing(self, interval: float = 2.0):
+        """
+        Start continuously publishing ball positions
+        
+        :param interval: Time between position updates in seconds
+        """
+        try:
+            while True:
+                self.publish_position()
+                time.sleep(interval)
+        except KeyboardInterrupt:
+            print("Stopping ball producer")
+        finally:
+            self.producer.close()
 
-    def send_coordinates(self):
-        while True:
-            coords = self.generate_next_coordinates()
-            self.producer.send(self.topic, key=self.machine_id.encode(), value=coords)
-            self.update_current_position(coords)
-            
-            # Temps d'attente pour simuler un déplacement réaliste
-            time.sleep(5)  # Mise à jour toutes les 5 secondes
+def load_player_data(file_path: str) -> List[Dict]:
+    """
+    Load player data from JSON file
+    
+    :param file_path: Path to the JSON file
+    :return: List of player dictionaries
+    """
+    with open(file_path, 'r') as f:
+        return json.load(f)
 
-# Configurations pour deux machines
-# IP1: Un trajet autour de Paris
-producer_ip1 = RealisticGPSProducer(
-    machine_id='ip1',
-    bootstrap_servers=['kafka:9092'], 
-    topic='coordinates', 
-    base_lat=48.8566,  # Latitude de Paris
-    base_lon=2.3522,   # Longitude de Paris
-    max_speed_km_per_hour=50  # 50 km/h
-)
+def main():
+    import threading
+    
+    bootstrap_servers = ['kafka:9092']
+    topic = 'coordinates'
+    
+    # Load player data for both teams
+    blue_lock_team = load_player_data('blue_lock_data.json')
+    u20_team = load_player_data('u_20_data.json')
+    
+    # Create producers for each player and the ball
+    producers = []
+    
+    # Blue Lock Team Players
+    for player in blue_lock_team:
+        producer = FootballPlayerProducer(player, bootstrap_servers, topic, 'blue_lock')
+        thread = threading.Thread(target=producer.start_publishing)
+        thread.start()
+        producers.append(producer)
+    
+    # U20 Team Players
+    for player in u20_team:
+        producer = FootballPlayerProducer(player, bootstrap_servers, topic, 'u20')
+        thread = threading.Thread(target=producer.start_publishing)
+        thread.start()
+        producers.append(producer)
+    
+    # Ball
+    ball_producer = BallProducer(bootstrap_servers, topic)
+    ball_thread = threading.Thread(target=ball_producer.start_publishing)
+    ball_thread.start()
+    producers.append(ball_producer)
 
-# IP2: Un trajet autour de Lyon
-producer_ip2 = RealisticGPSProducer(
-    machine_id='ip2',
-    bootstrap_servers=['kafka:9092'], 
-    topic='coordinates', 
-    base_lat=45.7640,  # Latitude de Lyon
-    base_lon=4.8357,   # Longitude de Lyon
-    max_speed_km_per_hour=70  # 70 km/h
-)
+    # Wait for all threads
+    for thread in threading.enumerate():
+        if thread != threading.main_thread():
+            thread.join()
 
-# Lancement des producers
-threading.Thread(target=producer_ip1.send_coordinates).start()
-threading.Thread(target=producer_ip2.send_coordinates).start()
+if __name__ == '__main__':
+    main()
