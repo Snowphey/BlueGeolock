@@ -68,15 +68,11 @@ services:
       - POSTGRES_HOST=postgres
 
   frontend:
-    image: nginx
-    networks:
-      - bluegeolock_network
-    volumes:
-      - ./frontend:/usr/share/nginx/html
-      - ./img:/usr/share/nginx/html/img
-    ports:
-      - "8080:80"
-
+      build: ./frontend
+      networks:
+        - bluegeolock_network
+      ports:
+        - "8080:80"
 volumes:
   postgres_data:
 
