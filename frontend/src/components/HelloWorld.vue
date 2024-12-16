@@ -1,9 +1,13 @@
 <script>
 export default {
   name: "HelloWorld",
+  methods: {
+    navigateTo(route) {
+      this.$router.push(route);
+    },
+  },
 };
 </script>
-
 
 <template>
   <div class="page-container">
@@ -18,7 +22,7 @@ export default {
     <!-- Match Selection -->
     <div class="matches-container">
       <!-- 11V11 Match -->
-      <div class="match-option">
+      <div class="match-option" @click="navigateTo('/11v11')">
         <img src="/src/assets/BL_Icon_Rin_Itoshi.png" alt="Player 1" class="player-img" />
         <div class="match-details">
           <h2>11V11</h2>
@@ -28,7 +32,7 @@ export default {
       </div>
 
       <!-- 3V3 Match -->
-      <div class="match-option">
+      <div class="match-option" @click="navigateTo('/3v3')">
         <div class="players-row">
           <img src="/src/assets/BL_Icon_Shoei_Baro.png" alt="Barou" class="player-img" />
           <img src="/src/assets/BL_Icon_Yoichi_Isagi.png" alt="Isagi" class="player-img" />
@@ -48,7 +52,6 @@ export default {
   </div>
 </template>
 
-
 <style scoped>
 .page-container {
   text-align: center;
@@ -58,9 +61,6 @@ export default {
   padding: 20px;
 }
 
-.logo-container {
-  margin-bottom: 20px;  
-}
 
 .logo {
   width: 700px;
@@ -78,13 +78,21 @@ export default {
   flex-wrap: wrap;
   gap: 20px;
 }
-
 .match-option {
+  cursor: pointer;
   border: 2px solid #000;
   border-radius: 10px;
   padding: 20px;
   width: 300px;
   background-color: #f9f9f9;
+  transition: background-color 0.3s, transform 0.3s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.match-option:hover {
+  background-color: #2831d2;
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
 }
 
 .players-row {
@@ -100,7 +108,6 @@ export default {
 }
 
 .match-details h2 {
-  margin: 10px 0;
   font-size: 20px;
   font-weight: bold;
 }

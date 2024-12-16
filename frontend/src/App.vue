@@ -4,8 +4,7 @@ import HelloWorld from './components/HelloWorld.vue'
 
 <template>
   <div>
-
-  <HelloWorld />
+  <router-view />
   </div>
 
 </template>
