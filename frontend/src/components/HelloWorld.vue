@@ -8,7 +8,6 @@ export default {
   },
 };
 </script>
-
 <template>
   <div class="page-container">
     <!-- Logo -->
@@ -16,11 +15,8 @@ export default {
       <img src="/src/assets/Blue_Geolock_logo_title.png" alt="Blue Lock Logo" class="logo" />
     </div>
 
-    <!-- Title -->
-    <h1 class="title">CHOOSE MATCH:</h1>
-
     <!-- Match Selection -->
-    <div class="matches-container">
+    <div class="matches-wrapper">
       <!-- 11V11 Match -->
       <div class="match-option" @click="navigateTo('/11v11')">
         <img src="/src/assets/BL_Icon_Rin_Itoshi.png" alt="Player 1" class="player-img" />
@@ -29,6 +25,11 @@ export default {
           <p>BLUE LOCK <br />VS<br />U-20 JAPAN</p>
         </div>
         <img src="/src/assets/BL_Icon_Sae_Itoshi.png" alt="Player 2" class="player-img" />
+      </div>
+
+      <!-- Title centered -->
+      <div class="title-container">
+        <h1 class="title">CHOOSE MATCH:</h1>
       </div>
 
       <!-- 3V3 Match -->
@@ -58,32 +59,31 @@ export default {
   font-family: Arial, sans-serif;
   background-color: #ffffff;
   color: #000;
-  padding: 20px;
+  padding: 10px;
 }
 
+.logo-container {
+  margin-bottom: 10px;
+}
 
 .logo {
-  width: 700px;
+  width: 750px; /* Taille réduite du logo */
 }
 
-.title {
-  font-size: 24px;
-  margin-bottom: 20px 0;
-  font-weight: bold;
-}
-
-.matches-container {
+.matches-wrapper {
   display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  gap: 20px;
+  justify-content: center; /* Alignement horizontal */
+  align-items: center;
+  gap: 20px; /* Espacement horizontal entre les éléments */
+  position: relative;
 }
+
 .match-option {
   cursor: pointer;
   border: 2px solid #000;
   border-radius: 10px;
-  padding: 20px;
-  width: 300px;
+  padding: 15px;
+  width: 450px;
   background-color: #f9f9f9;
   transition: background-color 0.3s, transform 0.3s;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -95,26 +95,36 @@ export default {
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
 }
 
+.title-container {
+ margin: 50px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: bold;
+  margin: 0;
+}
+
 .players-row {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 5px;
+  margin-bottom: 5px;
 }
 
 .player-img {
-  width: 60px;
+  width: 100px;
   height: auto;
 }
 
 .match-details h2 {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
 }
 
 .match-details p {
   margin: 0;
-  line-height: 1.5;
-  font-size: 16px;
+  line-height: 1.3;
+  font-size: 14px;
 }
 </style>
