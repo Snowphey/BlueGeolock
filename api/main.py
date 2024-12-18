@@ -55,31 +55,40 @@ async def get_latest_coordinates():
 @app.websocket("/ws/coordinates")
 async def websocket_coordinates(websocket: WebSocket):
     await websocket.accept()
-
     conn = psycopg2.connect(**pg_params)
 
-    while True:
+    try:
+        while True:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT DISTINCT ON (first_name, last_name) 
+                    first_name,
+                    last_name,
+                    latitude,
+                    longitude,
+                    timestamp
+                FROM gps_coordinates
+                ORDER BY first_name, last_name, timestamp DESC;
+            """)
+            
+            results = cursor.fetchall()
+            coordinates = [
+                {
+                    "first_name": row[0],
+                    "last_name": row[1],
+                    "latitude": float(row[2]),
+                    "longitude": float(row[3]),
+                    "timestamp": row[4].isoformat()
+                } for row in results
+            ]
+            
+            await websocket.send_json(coordinates)
+            await asyncio.sleep(1)  # Adjust the sleep time as needed
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
         cursor = conn.cursor()
-        cursor.execute("""
-            SELECT DISTINCT ON (first_name, last_name) 
-                first_name,
-                last_name,
-                latitude,
-                longitude,
-                timestamp
-            FROM gps_coordinates
-            ORDER BY first_name, last_name, timestamp DESC;
-        """)
-        
-        results = cursor.fetchall()
-        coordinates = [
-            {
-                "first_name": row[0],
-                "last_name": row[1],
-                "latitude": float(row[2]),
-                "longitude": float(row[3]),
-                "timestamp": row[4].isoformat()
-            } for row in results
-        ]
-        
-        await websocket.send_json(coordinates)
+        cursor.execute("DELETE FROM gps_coordinates")
+        conn.commit()
+        conn.close()
+        await websocket.close()

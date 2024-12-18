@@ -1,0 +1,26 @@
+[
+    {
+        "first_name": "Rensuke",
+        "last_name": "Kunigami",
+        "number": 50,
+        "role": "striker",
+        "latitude": 0.399,
+        "longitude": 0.669
+    },
+    {
+        "first_name": "Hyoma",
+        "last_name": "Chigiri",
+        "number": 44,
+        "role": "striker",
+        "latitude": 0.685,
+        "longitude": 0.664  
+    },
+    {
+        "first_name": "Reo",
+        "last_name": "Mikage",
+        "number": 10,
+        "role": "striker",
+        "latitude": 0.512,
+        "longitude": 0.563
+    }
+]

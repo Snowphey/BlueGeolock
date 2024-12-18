@@ -38,6 +38,8 @@ services:
     build: ./producers
     networks:
       - bluegeolock_network
+    ports:
+      - "5000:5000"
     depends_on:
       - kafka
     environment:

@@ -3,7 +3,7 @@ export default {
   name: "HelloWorld",
   methods: {
     navigateTo(route) {
-      this.$router.push(route);
+      this.$router.push({path: route});
     },
   },
 };
@@ -12,19 +12,19 @@ export default {
   <div class="page-container">
     <!-- Logo -->
     <div class="logo-container">
-      <img src="/src/assets/Blue_Geolock_logo_title.png" alt="Blue Lock Logo" class="logo" />
+      <img src="/assets/Blue_Geolock_logo_title.png" alt="Blue Lock Logo" class="logo" />
     </div>
 
     <!-- Match Selection -->
     <div class="matches-wrapper">
       <!-- 11V11 Match -->
       <div class="match-option" @click="navigateTo('/11v11')">
-        <img src="/src/assets/BL_Icon_Rin_Itoshi.png" alt="Player 1" class="player-img" />
+        <img src="/assets/icons/11v11/BlueLock/png/BL_Icon_Rin_Itoshi.png" alt="Player 1" class="player-img" />
         <div class="match-details">
           <h2>11V11</h2>
           <p>BLUE LOCK <br />VS<br />U-20 JAPAN</p>
         </div>
-        <img src="/src/assets/BL_Icon_Sae_Itoshi.png" alt="Player 2" class="player-img" />
+        <img src="/assets/icons/11v11/U20/png/BL_Icon_Sae_Itoshi.png" alt="Player 2" class="player-img" />
       </div>
 
       <!-- Title centered -->
@@ -35,18 +35,18 @@ export default {
       <!-- 3V3 Match -->
       <div class="match-option" @click="navigateTo('/3v3')">
         <div class="players-row">
-          <img src="/src/assets/BL_Icon_Shoei_Baro.png" alt="Barou" class="player-img" />
-          <img src="/src/assets/BL_Icon_Yoichi_Isagi.png" alt="Isagi" class="player-img" />
-          <img src="/src/assets/BL_Icon_Seishiro_Nagi.png" alt="Nagi" class="player-img" />
+          <img src="/assets/icons/3v3/BIN/png/BL_Icon_Shoei_Baro.png" alt="Barou" class="player-img" />
+          <img src="/assets/icons/3v3/BIN/png/BL_Icon_Yoichi_Isagi.png" alt="Isagi" class="player-img" />
+          <img src="/assets/icons/3v3/BIN/png/BL_Icon_Seishiro_Nagi.png" alt="Nagi" class="player-img" />
         </div>
         <div class="match-details">
           <h2>3V3</h2>
           <p>BAROU, ISAGI & NAGI<br /> VS<br />KUNIGAMI, CHIGIRI & REO</p>
         </div>
         <div class="players-row">
-          <img src="/src/assets/BL_Icon_Rensuke_Kunigami.png" alt="Kunigami" class="player-img" />
-          <img src="/src/assets/BL_Icon_Hyoma_Chigiri.png" alt="Chigiri" class="player-img" />
-          <img src="/src/assets/BL_Icon_Reo_Mikage.png" alt="Reo" class="player-img" />
+          <img src="/assets/icons/3v3/KCR/png/BL_Icon_Rensuke_Kunigami.png" alt="Kunigami" class="player-img" />
+          <img src="/assets/icons/3v3/KCR/png/BL_Icon_Hyoma_Chigiri.png" alt="Chigiri" class="player-img" />
+          <img src="/assets/icons/3v3/KCR/png/BL_Icon_Reo_Mikage.png" alt="Reo" class="player-img" />
         </div>
       </div>
     </div>

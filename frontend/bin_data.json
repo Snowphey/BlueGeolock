@@ -1,0 +1,26 @@
+[
+    {
+        "first_name": "Shoei",
+        "last_name": "Baro",
+        "number": 18,
+        "role": "striker",
+        "latitude": 0.389,
+        "longitude": 0.293
+    },
+    {
+        "first_name": "Yoichi",
+        "last_name": "Isagi",
+        "number": 15,
+        "role": "striker",
+        "latitude": 0.509,
+        "longitude": 0.447
+    },
+    {
+        "first_name": "Seishiro",
+        "last_name": "Nagi",
+        "number": 7,
+        "role": "striker",
+        "latitude": 0.611,
+        "longitude": 0.293
+    }
+]
