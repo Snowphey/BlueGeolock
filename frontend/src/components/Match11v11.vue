@@ -82,7 +82,7 @@ export default {
                   popupAnchor: [0, -20]
               });
 
-      let ballMarker = L.marker([0.5 * height, 0.5 * width], { icon: ballIcon })
+      let ballMarker = L.Marker.movingMarker([[0.5 * height, 0.5 * width]], [2000], { icon: ballIcon })
                   .addTo(map)
                   .bindPopup('Ball');
 
@@ -99,7 +99,7 @@ export default {
                   popupAnchor: popupAnchor
               });
 
-              let playerMarker = L.marker([player.latitude * height, player.longitude * width], { icon: playerIcon })
+              let playerMarker = L.Marker.movingMarker([[player.latitude * height, player.longitude * width]], [2000], { icon: playerIcon })
                   .addTo(map)
                   .bindPopup(`Player: ${player.first_name} ${player.last_name}<br>Number: ${player.number}<br>Team: ${teamName}<br>Position: ${player.role}`);
 
@@ -111,7 +111,10 @@ export default {
           let key = `${firstName}_${lastName}`;
           let playerMarker = playerMarkers[key];
           if (playerMarker) {
-              playerMarker.setLatLng([newLatitude * height, newLongitude * width]);
+              if (!playerMarker.isStarted()) {
+                        playerMarker.start();
+              }
+              playerMarker.moveTo([newLatitude * height, newLongitude * width], 2000);
           } else {
               console.error(`Player marker for ${firstName} ${lastName} not found.`);
           }
@@ -131,7 +134,10 @@ export default {
           
           coordinates.forEach(coord => {
               if (coord.first_name === 'Football' && coord.last_name === 'Ball') {
-                  ballMarker.setLatLng([coord.latitude * height, coord.longitude * width]);
+                  if (!ballMarker.isStarted()) {
+                    ballMarker.start();
+                  }
+                  ballMarker.moveTo([coord.latitude * height, coord.longitude * width], 2000);
               } else {
                   if(blue_lock_team.some(player => player.first_name === coord.first_name && player.last_name === coord.last_name) ||
                      u20_team.some(player => player.first_name === coord.first_name && player.last_name === coord.last_name)) {
