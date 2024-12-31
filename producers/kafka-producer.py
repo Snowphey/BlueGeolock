@@ -1,16 +1,12 @@
 import json
 import threading
 import time
-import sys
-import os
 from flask import Flask, request, jsonify
-import subprocess
 from kafka import KafkaProducer
 from typing import Dict, List, Tuple
 from flask_cors import CORS
 
 app = Flask(__name__)
-
 CORS(app)
 
 class FootballPlayerProducer:
@@ -24,7 +20,8 @@ class FootballPlayerProducer:
         """
         self.producer = KafkaProducer(
             bootstrap_servers=bootstrap_servers,
-            value_serializer=lambda v: json.dumps(v).encode('utf-8')
+            value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+            key_serializer=lambda k: k.encode('utf-8')
         )
         
         self.player_data = player_data
@@ -36,15 +33,15 @@ class FootballPlayerProducer:
         
         # Movement constraints based on role
         self.movement_constraints = {
-            'goalkeeper': (0.001, 0.005),  # Smaller area near initial position
-            'central_defender': (0.002, 0.01),  # Moderate movement area
+            'goalkeeper': (0.001, 0.005),
+            'central_defender': (0.002, 0.01),
             'left_defender': (0.001, 0.008),
             'right_defender': (0.001, 0.008),
             'defensive_midfielder': (0.002, 0.01),
             'offensive_midfielder': (0.003, 0.015),
             'left_winger': (0.002, 0.01),
             'right_winger': (0.002, 0.01),
-            'striker': (0.003, 0.015)  # Larger movement area
+            'striker': (0.003, 0.015)
         }
         self.running = True
         
@@ -58,7 +55,7 @@ class FootballPlayerProducer:
         role = self.player_data['role']
         min_distance, max_distance = self.movement_constraints[role]
         
-        # Random walk with role-based constraints and team bias
+        # Random walk with role-based constraints
         lat_change = random.uniform(-max_distance, max_distance)
         lon_change = random.uniform(-max_distance, max_distance)
         
@@ -78,6 +75,7 @@ class FootballPlayerProducer:
         self.current_lon = new_lon
         
         # Prepare message
+        player_key = f"{self.player_data['first_name']}_{self.player_data['last_name']}"
         message = {
             'first_name': self.player_data['first_name'],
             'last_name': self.player_data['last_name'],
@@ -86,7 +84,7 @@ class FootballPlayerProducer:
         }
         
         # Publish to Kafka
-        self.producer.send(self.topic, message)
+        self.producer.send(self.topic, key=player_key, value=message)
         self.producer.flush()
     
     def start_publishing(self, interval: float = 2.0):
@@ -114,7 +112,8 @@ class BallProducer:
         """
         self.producer = KafkaProducer(
             bootstrap_servers=bootstrap_servers,
-            value_serializer=lambda v: json.dumps(v).encode('utf-8')
+            value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+            key_serializer=lambda k: k.encode('utf-8')
         )
         
         self.topic = topic
@@ -156,7 +155,7 @@ class BallProducer:
         }
         
         # Publish to Kafka
-        self.producer.send(self.topic, message)
+        self.producer.send(self.topic, key='Ball', value=message)
         self.producer.flush()
     
     def start_publishing(self, interval: float = 2.0):
@@ -241,9 +240,9 @@ def stop_match():
         for producer in producers:
             producer.stop()
     if threads:
-      for thread in threads:
-        if thread != threading.main_thread():
-            thread.join()
+        for thread in threads:
+            if thread != threading.main_thread():
+                thread.join()
     producers = []
     threads = []
     print("Match stopped and producers closed")
@@ -260,7 +259,7 @@ def start_match_route():
         return jsonify({'status': 'success', 'message': f'Match {match_type} started'}), 200
     except Exception as e:
         return jsonify({'status': 'error', 'message': f'Error starting match: {str(e)}'}), 500
-   
+
 @app.route('/stop_match', methods=['POST'])
 def stop_match_route():
     try:
